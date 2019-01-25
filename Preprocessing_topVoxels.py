@@ -53,6 +53,9 @@ k_list = [10, 15, 30, 45, 200]
 # ボクセルをランク順にしたファイル名
 rankFile = 'correlationmap.csv'
 
+# なんのランクか
+rankName = 'COR'
+
 
 # # extraction_vox関数
 # もとのrawファイルに記録されているZ-scoreをdata，上位k個のボクセル名をインデックスとしたデータフレームをrank_k，タスク名をtask，新しいRawDataのディレクトリのパスをpathで取得．
@@ -111,7 +114,7 @@ for k in (k_list):
     print('k = ' + str(k))
 
     # 新しいRawDataのディレクトリ名・パス
-    DIR = PATH_pre + '../' + str(k) + 'vox_RawData'
+    DIR = PATH_pre + '../' + rankName + str(k) + 'vox_RawData'
     PATH = DIR + '/'
 
     # すでに存在する場合は何もせず，存在していない場合はディレクトリ作成

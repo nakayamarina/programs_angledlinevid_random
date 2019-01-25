@@ -41,7 +41,7 @@ args = sys.argv
 PATH = args[1]
 
 # # jupyter notebookのときはここで指定
-# PATH = '../MaskBrodmann/20181119tm/10vox_RawData/'
+# PATH = '../MaskBrodmann/20181119tm/COR10vox_RawData/'
 
 # 検証手法
 kCV = 10

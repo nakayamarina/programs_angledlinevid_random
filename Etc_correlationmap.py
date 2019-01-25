@@ -17,28 +17,28 @@
 # ボクセルごとに相関を算出する．
 # タスク1のZ-scoreには1を，タスク2のZ-scoreには-1をかけ，和を求める．値のものほど相関が大きいということになるため，昇順に並べ替えておく．
 
-# In[1]:
+# In[223]:
 
 print('############ Etc_correlationmap.py program excution ############')
 
 
-# In[3]:
+# In[224]:
 
 import numpy as np
 import pandas as pd
 import sys
 
 
-# In[4]:
+# In[225]:
 
 args = sys.argv
 PATH = args[1]
 
-# jupyter notebookのときはここで指定
+# # jupyter notebookのときはここで指定
 # PATH = '../SpmActive/20181119tm/RawData/'
 
 
-# In[5]:
+# In[228]:
 
 # 読み込みたいファイルのパス
 PATH_al45 = PATH + 'raw_al45.csv'
@@ -55,7 +55,14 @@ al135.columns = range(0, len(al135.columns))
 al135 = al135.set_index(0)
 
 
-# In[129]:
+# In[229]:
+
+# データフレームに格納されている値がstr型なのでfloat型にする
+al45 = al45.astype(float)
+al135 = al135.astype(float)
+
+
+# In[230]:
 
 # ボクセル数
 voxNum = len(al45) // 4
@@ -77,27 +84,26 @@ for voxNo in range(voxNum):
     al45Vox = al45.loc[voxName]
     al135Vox = al135.loc[voxName]
 
-    # ボクセルごとに各タスクの総和を求める
+    # array型に変換，各試行を一つにまとめる
+    al45ar = np.array(al45Vox).reshape(-1)
+    al135ar = np.array(al135Vox).reshape(-1)
 
-    # 45度線は1をかけたものの総和
-    # 135度線は-1をかけたものの総和
-    # データフレームの値はObject型なのでfloat型に変換しないと掛け算や総和を求められない
-    al45sum = sum(al45Vox.astype(float).sum())
-    al135sum = sum((al135Vox.astype(float) * (-1)).sum())
+    # 相関を求める
+    cor_matrix = np.corrcoef(al45ar, al135ar)
 
-    # 各タスクの総和を足すことで相関を求める
-    alsum = al45sum + al135sum
+    # 相関行列という形になっているので相関係数を取得
+    cor = cor_matrix[0][1]
 
-    # 求めた相関を格納
-    cormap = cormap + [alsum]
+    # 求めた相関係数の絶対値を格納
+    cormap = cormap + [abs(cor)]
 
-    print(voxName + '( ' + str(counter+1) + ' / ' + str(voxNum) + ' ) : ' + str(alsum))
+    print(voxName + '( ' + str(counter+1) + ' / ' + str(voxNum) + ' ) : ' + str(cor))
 
     counter = counter + 1
     voxNames = voxNames + [voxName]
 
 
-# In[141]:
+# In[231]:
 
 # 相関一覧をデータフレーム化
 cormap = pd.DataFrame(cormap)
@@ -107,17 +113,29 @@ cormap.index = voxNames
 cormap.columns = ['Correlation']
 
 
-# In[145]:
+# In[232]:
 
 # 相関の大き順に並べ替え
 cormap_sort = cormap.sort_values('Correlation', ascending = False)
 
 
-# In[146]:
+# In[233]:
 
 # csv書き出し
 PATH_cormap = PATH + 'correlationmap.csv'
 cormap_sort.to_csv(PATH_cormap)
+
+
+# In[221]:
+
+# 相関一覧をデータフレーム化
+cormap = pd.DataFrame(cormap)
+
+# カラム名，インデックス名をつける
+cormap.index = voxNames
+cormap.columns = ['Correlation']
+# 相関の大き順に並べ替え
+cormap_sort = cormap.sort_values('Correlation', ascending = False)
 
 
 # In[ ]:
